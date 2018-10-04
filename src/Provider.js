@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { TransitionGroup } from 'react-transition-group'
-import { createPortal } from 'react-dom'
 import { Context } from './Context'
 import Wrapper from './Wrapper'
 import Transition from './Transition'
@@ -35,7 +34,6 @@ class Provider extends Component {
   }
 
   state = {
-    root: null,
     alerts: []
   }
 
@@ -112,22 +110,12 @@ class Provider extends Component {
     return this.show(message, options)
   }
 
-  componentDidMount() {
-    const root = document.createElement('div')
-    document.body.appendChild(root)
-
-    this.setState({ root })
-  }
-
   componentWillUnmount() {
     this.timerId.forEach(clearTimeout)
-
-    const { root } = this.state
-    if (root) document.body.removeChild(root)
   }
 
   render() {
-    const { root, alerts } = this.state
+    const { alerts } = this.state
 
     const {
       children,
@@ -161,22 +149,15 @@ class Provider extends Component {
     return (
       <Context.Provider value={alert}>
         {children}
-        {root &&
-          createPortal(
-            <Wrapper options={options}>
-              <TransitionGroup>
-                {alerts.map(alert => (
-                  <Transition type={options.transition} key={alert.id}>
-                    <AlertComponent
-                      style={{ margin: options.offset }}
-                      {...alert}
-                    />
-                  </Transition>
-                ))}
-              </TransitionGroup>
-            </Wrapper>,
-            root
-          )}
+        <Wrapper options={options}>
+          <TransitionGroup>
+            {alerts.map(alert => (
+              <Transition type={options.transition} key={alert.id}>
+                <AlertComponent style={{ margin: options.offset }} {...alert} />
+              </Transition>
+            ))}
+          </TransitionGroup>
+        </Wrapper>
       </Context.Provider>
     )
   }
