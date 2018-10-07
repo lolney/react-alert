@@ -1,7 +1,6 @@
 import React, { createContext, Component } from 'react'
 import { Transition, TransitionGroup } from 'react-transition-group'
 import PropTypes from 'prop-types'
-import { createPortal } from 'react-dom'
 
 var Context = createContext()
 
@@ -283,7 +282,6 @@ var Provider = (function(_Component) {
       )),
       _this)),
       (_this.state = {
-        root: null,
         alerts: []
       }),
       (_this.timerId = []),
@@ -390,30 +388,15 @@ var Provider = (function(_Component) {
 
   createClass(Provider, [
     {
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        var root = document.createElement('div')
-        document.body.appendChild(root)
-
-        this.setState({ root: root })
-      }
-    },
-    {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
         this.timerId.forEach(clearTimeout)
-
-        var root = this.state.root
-
-        if (root) document.body.removeChild(root)
       }
     },
     {
       key: 'render',
       value: function render() {
-        var _state = this.state,
-          root = _state.root,
-          alerts = _state.alerts
+        var alerts = this.state.alerts
         var _props = this.props,
           children = _props.children,
           offset = _props.offset,
@@ -445,33 +428,24 @@ var Provider = (function(_Component) {
           Context.Provider,
           { value: alert },
           children,
-          root &&
-            createPortal(
-              React.createElement(
-                Wrapper,
-                { options: options },
-                React.createElement(
-                  TransitionGroup,
-                  null,
-                  alerts.map(function(alert) {
-                    return React.createElement(
-                      Transtion,
-                      { type: options.transition, key: alert.id },
-                      React.createElement(
-                        AlertComponent,
-                        _extends(
-                          {
-                            style: { margin: options.offset }
-                          },
-                          alert
-                        )
-                      )
-                    )
-                  })
+          React.createElement(
+            Wrapper,
+            { options: options },
+            React.createElement(
+              TransitionGroup,
+              null,
+              alerts.map(function(alert) {
+                return React.createElement(
+                  Transtion,
+                  { type: options.transition, key: alert.id },
+                  React.createElement(
+                    AlertComponent,
+                    _extends({ style: { margin: options.offset } }, alert)
+                  )
                 )
-              ),
-              root
+              })
             )
+          )
         )
       }
     }

@@ -4,25 +4,22 @@
         exports,
         require('react'),
         require('react-transition-group'),
-        require('prop-types'),
-        require('react-dom')
+        require('prop-types')
       )
     : typeof define === 'function' && define.amd
       ? define([
           'exports',
           'react',
           'react-transition-group',
-          'prop-types',
-          'react-dom'
+          'prop-types'
         ], factory)
       : factory(
           (global.ReactAlert = {}),
           global.React,
           global.ReactTransitionGroup,
-          global.PropTypes,
-          global.ReactDOM
+          global.PropTypes
         )
-})(this, function(exports, React, reactTransitionGroup, PropTypes, reactDom) {
+})(this, function(exports, React, reactTransitionGroup, PropTypes) {
   'use strict'
 
   var React__default = 'default' in React ? React['default'] : React
@@ -315,7 +312,6 @@
         )),
         _this)),
         (_this.state = {
-          root: null,
           alerts: []
         }),
         (_this.timerId = []),
@@ -438,30 +434,15 @@
 
     createClass(Provider, [
       {
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-          var root = document.createElement('div')
-          document.body.appendChild(root)
-
-          this.setState({ root: root })
-        }
-      },
-      {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
           this.timerId.forEach(clearTimeout)
-
-          var root = this.state.root
-
-          if (root) document.body.removeChild(root)
         }
       },
       {
         key: 'render',
         value: function render() {
-          var _state = this.state,
-            root = _state.root,
-            alerts = _state.alerts
+          var alerts = this.state.alerts
           var _props = this.props,
             children = _props.children,
             offset = _props.offset,
@@ -493,33 +474,24 @@
             Context.Provider,
             { value: alert },
             children,
-            root &&
-              reactDom.createPortal(
-                React__default.createElement(
-                  Wrapper,
-                  { options: options },
-                  React__default.createElement(
-                    reactTransitionGroup.TransitionGroup,
-                    null,
-                    alerts.map(function(alert) {
-                      return React__default.createElement(
-                        Transtion,
-                        { type: options.transition, key: alert.id },
-                        React__default.createElement(
-                          AlertComponent,
-                          _extends(
-                            {
-                              style: { margin: options.offset }
-                            },
-                            alert
-                          )
-                        )
-                      )
-                    })
+            React__default.createElement(
+              Wrapper,
+              { options: options },
+              React__default.createElement(
+                reactTransitionGroup.TransitionGroup,
+                null,
+                alerts.map(function(alert) {
+                  return React__default.createElement(
+                    Transtion,
+                    { type: options.transition, key: alert.id },
+                    React__default.createElement(
+                      AlertComponent,
+                      _extends({ style: { margin: options.offset } }, alert)
+                    )
                   )
-                ),
-                root
+                })
               )
+            )
           )
         }
       }
